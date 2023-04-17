@@ -45,7 +45,8 @@ func (c *Client) GetNearbyCities(req *SearchRequest, filter SearchFilter) ([]Cit
 	params.Add("cities", string(filter))
 
 	URL.RawQuery = params.Encode()
-	response, err := http.Get(URL.String())
+	finalURL := URL.String()
+	response, err := http.Get(finalURL)
 	if err != nil {
 		return nil, err
 	}
