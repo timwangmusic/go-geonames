@@ -1,4 +1,4 @@
-package main
+package go_geonames
 
 import (
 	"encoding/json"
@@ -9,13 +9,13 @@ import (
 )
 
 type Client struct {
-	username string
+	Username string
 }
 
 type SearchRequest struct {
-	latitude  float64
-	longitude float64
-	radius    float64
+	Latitude  float64
+	Longitude float64
+	Radius    float64
 }
 
 type SearchFilter string
@@ -27,7 +27,7 @@ const (
 	CityWithPopulationGreaterThan15000 SearchFilter = "cities15000"
 )
 
-func (c *Client) getNearbyCities(req *SearchRequest, filter SearchFilter) ([]City, error) {
+func (c *Client) GetNearbyCities(req *SearchRequest, filter SearchFilter) ([]City, error) {
 	rawURL, err := url.JoinPath(ServiceBaseURL, "findNearbyPlaceNameJSON")
 	if err != nil {
 		return nil, err
@@ -38,10 +38,10 @@ func (c *Client) getNearbyCities(req *SearchRequest, filter SearchFilter) ([]Cit
 		return nil, err
 	}
 	params := URL.Query()
-	params.Add("username", c.username)
-	params.Add("lat", fmt.Sprintf("%.4f", req.latitude))
-	params.Add("lng", fmt.Sprintf("%.4f", req.longitude))
-	params.Add("radius", fmt.Sprintf("%.2f", req.radius))
+	params.Add("username", c.Username)
+	params.Add("lat", fmt.Sprintf("%.4f", req.Latitude))
+	params.Add("lng", fmt.Sprintf("%.4f", req.Longitude))
+	params.Add("radius", fmt.Sprintf("%.2f", req.Radius))
 	params.Add("cities", string(filter))
 
 	URL.RawQuery = params.Encode()
@@ -62,4 +62,18 @@ func (c *Client) getNearbyCities(req *SearchRequest, filter SearchFilter) ([]Cit
 	}
 
 	return cities.Cities, nil
+}
+
+type City struct {
+	ID         int64  `json:"geonameId"`
+	Name       string `json:"name"`
+	Latitude   string `json:"lat"`
+	Longitude  string `json:"lng"`
+	Population int64  `json:"population"`
+	AdminArea1 string `json:"adminCode1"`
+	Country    string `json:"countryName"`
+}
+
+type Geonames struct {
+	Cities []City `json:"geonames"`
 }
